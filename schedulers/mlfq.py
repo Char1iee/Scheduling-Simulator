@@ -39,18 +39,16 @@ class MLFQScheduler(Scheduler):
     def has_ready_jobs(self) -> bool:
         return any(q for q in self.queues)
 
-    def on_job_preempted(self, job: Job, current_time: int) -> None:
+    def get_quantum(self, job: Job) -> int:
+        """Return the time slice for this job based on its current MLFQ level."""
         level = self.job_level.get(job.job_id, 0)
-        used = self.job_used.get(job.job_id, 0)
-        # Demote if used full quantum at this level
-        if used >= self.quanta[min(level, len(self.quanta) - 1)]:
-            new_level = min(level + 1, self.num_queues - 1)
-            self.job_level[job.job_id] = new_level
-            self.job_used[job.job_id] = 0
-            self.queues[new_level].append(job)
-        else:
-            self.queues[level].appendleft(job)
+        return self.quanta[min(level, len(self.quanta) - 1)]
 
-    def notify_time_used(self, job: Job, time_used: int) -> None:
-        """Called by engine to track usage (optional - engine uses fixed quantum)."""
-        self.job_used[job.job_id] = self.job_used.get(job.job_id, 0) + time_used
+    def on_job_preempted(self, job: Job, current_time: int) -> None:
+        # A preemption means the job used its full quantum at the current level.
+        # Demote it to the next lower-priority queue (or stay at the bottom).
+        level = self.job_level.get(job.job_id, 0)
+        new_level = min(level + 1, self.num_queues - 1)
+        self.job_level[job.job_id] = new_level
+        self.job_used[job.job_id] = 0
+        self.queues[new_level].append(job)  # back of lower-priority queue

@@ -15,6 +15,7 @@ class SJFScheduler(Scheduler):
     """Shortest Job First - non-preemptive. Uses burst_time at arrival."""
 
     name = "SJF"
+    preempts_on_quantum = False  # non-preemptive: run to completion once started
 
     def __init__(self) -> None:
         self.ready_queue: list[tuple[int, int, Job]] = []  # (burst_time, job_id, job)

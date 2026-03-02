@@ -39,6 +39,14 @@ class PriorityAgingScheduler(Scheduler):
     def get_next_job(self, current_time: int) -> Optional[Job]:
         if not self.ready_queue:
             return None
+        # Refresh all effective priorities to account for accumulated aging,
+        # then pick the highest.
+        updated = []
+        for _, _, _, job in self.ready_queue:
+            eff = self._effective_priority(job, current_time)
+            updated.append((-eff, self.job_arrival[job.job_id], job.job_id, job))
+        heapq.heapify(updated)
+        self.ready_queue = updated
         _, _, _, job = heapq.heappop(self.ready_queue)
         self.job_arrival.pop(job.job_id, None)
         return job

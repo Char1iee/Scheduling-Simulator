@@ -41,11 +41,20 @@ class SimulationEngine:
         current_job: Optional[Job] = None
         job_run_start: int = 0
 
+        # Whether this scheduler supports quantum-based preemption.
+        preempts_on_quantum = getattr(self.scheduler, "preempts_on_quantum", True)
+        # Optional per-job quantum hook (e.g. MLFQ per-level quanta).
+        get_quantum = getattr(self.scheduler, "get_quantum", None)
+
         while arrivals or current_job or self.scheduler.has_ready_jobs():
             next_arrival_time = arrivals[0].time if arrivals else float("inf")
 
             if current_job is not None:
-                run_duration = min(self.quantum, current_job.remaining_time)
+                effective_quantum = get_quantum(current_job) if get_quantum else self.quantum
+                if preempts_on_quantum:
+                    run_duration = min(effective_quantum, current_job.remaining_time)
+                else:
+                    run_duration = current_job.remaining_time  # run to completion
                 next_completion = job_run_start + run_duration
             else:
                 next_completion = float("inf")
