@@ -78,17 +78,18 @@ def run_experiments(
 
 def print_results_table(results: List[ExperimentResult]) -> None:
     """Print a formatted comparison table."""
-    print("\n" + "=" * 90)
+    print("\n" + "=" * 100)
     print("SCHEDULING EXPERIMENT RESULTS")
-    print("=" * 90)
+    print("=" * 100)
 
     workloads = sorted(set(r.workload_name for r in results))
     schedulers = sorted(set(r.scheduler_name for r in results))
 
     for wl in workloads:
         print(f"\n--- Workload: {wl.upper()} ---\n")
-        print(f"{'Scheduler':<20} {'Avg TT':>10} {'Avg RT':>10} {'Tail p95':>10} {'Starvation':>12}")
-        print("-" * 65)
+        print(f"{'Scheduler':<20} {'Avg TT':>10} {'Avg RT':>10} {'Tail p95':>10}"
+              f" {'Starv(1st)':>12} {'Starv(life)':>12}")
+        print("-" * 77)
 
         for sched in schedulers:
             r = next((x for x in results if x.workload_name == wl and x.scheduler_name == sched), None)
@@ -96,6 +97,10 @@ def print_results_table(results: List[ExperimentResult]) -> None:
                 continue
             m = r.metrics
             print(f"{sched:<20} {m.avg_turnaround_time:>10.1f} {m.avg_response_time:>10.1f} "
-                  f"{m.tail_latency_p95:>10.1f} {m.starvation_rate*100:>11.1f}%")
+                  f"{m.tail_latency_p95:>10.1f}"
+                  f" {m.starvation_rate*100:>11.1f}%"
+                  f" {m.lifetime_starvation_rate*100:>11.1f}%")
 
-    print("\n" + "=" * 90)
+    print("\n" + "=" * 100)
+    print("Starv(1st)  = % of jobs waiting > threshold before first run")
+    print("Starv(life) = % of jobs whose total wait (turnaround - burst) > threshold")

@@ -30,7 +30,8 @@ Scheduling-Simulator/
 | **Avg Turnaround Time** | Mean of (completion_time - arrival_time) across all jobs. Measures batch efficiency. |
 | **Avg Response Time** | Mean of (first_run_time - arrival_time). Measures interactive responsiveness. |
 | **Tail Latency (p95)** | 95th percentile turnaround time. Captures worst-case user experience. |
-| **Starvation Rate** | Fraction of jobs whose wait before first run exceeds a threshold. Measures long-wait risk. |
+| **Starv(1st)** | Fraction of jobs whose wait before first run exceeds a threshold. Measures initial scheduling delay. |
+| **Starv(life)** | Fraction of jobs whose total wait over their lifetime (turnaround - burst) exceeds a threshold. Captures repeated preemption/demotion starvation that first-run misses (e.g., MLFQ demoting long jobs). |
 
 ## Schedulers
 
@@ -67,13 +68,15 @@ Scheduling-Simulator/
 
 Based on theoretical analysis from the project proposal:
 
-| Scheduler | Turnaround Time | Response Time | Tail Latency | Starvation Rate |
-|---|---|---|---|---|
-| Round Robin | Medium | Medium | Medium | Low |
-| Priority+Aging | Medium | Medium | Medium-High | Low |
-| MLFQ | Medium | **Low** | Low | Medium |
-| SJF / SRTF | **Low** | Medium | High | High |
-| Lottery | Medium | Medium | Medium | Low |
+| Scheduler | Turnaround Time | Response Time | Tail Latency | Starv(1st) | Starv(life) |
+|---|---|---|---|---|---|
+| Round Robin | Medium | Medium | Medium | Low | Medium |
+| Priority+Aging | Medium | Medium | Medium-High | Low | Medium |
+| MLFQ | Medium | Low | Low | Low | Medium-High |
+| SJF / SRTF | Low | Medium | High | High | High |
+| Lottery | Medium | Medium | Medium | Low | Medium |
+
+MLFQ is expected to show a split: near-zero first-run starvation (new jobs always enter queue 0) but medium-high lifetime starvation (long-running jobs are demoted and repeatedly delayed).
 
 **Batch workloads**: SJF/SRTF expected to achieve best turnaround. Round Robin and Lottery provide more stable fairness at higher turnaround cost.
 

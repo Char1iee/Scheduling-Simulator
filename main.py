@@ -12,7 +12,7 @@ def main() -> None:
     results = run_experiments(
         quantum=4,
         workload_seed=42,
-        starvation_threshold=50,
+        starvation_threshold=100,
     )
 
     print_results_table(results)

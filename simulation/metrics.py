@@ -13,7 +13,8 @@ class SimulationMetrics:
     avg_turnaround_time: float
     avg_response_time: float
     tail_latency_p95: float  # 95th percentile turnaround time
-    starvation_rate: float  # fraction of jobs with wait_time > threshold
+    starvation_rate: float  # fraction of jobs with first-run wait > threshold
+    lifetime_starvation_rate: float  # fraction of jobs with total wait > threshold
     total_jobs: int
     completed_jobs: int
 
@@ -31,6 +32,7 @@ def compute_metrics(
             avg_response_time=0.0,
             tail_latency_p95=0.0,
             starvation_rate=0.0,
+            lifetime_starvation_rate=0.0,
             total_jobs=0,
             completed_jobs=0,
         )
@@ -51,7 +53,7 @@ def compute_metrics(
     p95_idx = min(p95_idx, len(sorted_tt) - 1)
     tail_p95 = sorted_tt[p95_idx] if sorted_tt else 0.0
 
-    # Starvation: jobs with wait_time > threshold. Wait = first_run_time - arrival.
+    # Starvation (first-run): jobs whose wait before first run > threshold.
     starvation_count = 0
     for j in completed_jobs:
         if j.first_run_time is not None:
@@ -60,11 +62,24 @@ def compute_metrics(
                 starvation_count += 1
     starvation_rate = starvation_count / len(completed_jobs) if completed_jobs else 0.0
 
+    # Lifetime starvation: jobs whose total wait (turnaround - burst) > threshold.
+    # Captures jobs that ran but were repeatedly preempted/delayed over their lifetime.
+    lifetime_starve_count = 0
+    for j in completed_jobs:
+        if j.turnaround_time is not None:
+            total_wait = j.turnaround_time - j.burst_time
+            if total_wait > starvation_threshold:
+                lifetime_starve_count += 1
+    lifetime_starvation_rate = (
+        lifetime_starve_count / len(completed_jobs) if completed_jobs else 0.0
+    )
+
     return SimulationMetrics(
         avg_turnaround_time=avg_tt,
         avg_response_time=avg_rt,
         tail_latency_p95=tail_p95,
         starvation_rate=starvation_rate,
+        lifetime_starvation_rate=lifetime_starvation_rate,
         total_jobs=len(completed_jobs),
         completed_jobs=len(completed_jobs),
     )
