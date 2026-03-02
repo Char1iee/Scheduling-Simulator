@@ -16,21 +16,36 @@ class MLFQScheduler(Scheduler):
         self,
         num_queues: int = 3,
         quanta: Optional[list[int]] = None,
+        boost_interval: int = 50,
     ) -> None:
         self.num_queues = num_queues
         self.quanta = quanta or [1, 2, 4]  # quantum per level
+        self.boost_interval = boost_interval  # Rule 5: periodic priority boost
         while len(self.quanta) < num_queues:
             self.quanta.append(self.quanta[-1] * 2)
         self.queues: list[deque[Job]] = [deque() for _ in range(num_queues)]
         self.job_level: dict[int, int] = {}  # job_id -> queue level
         self.job_used: dict[int, int] = {}  # job_id -> time used in current level
+        self.last_boost_time: int = 0
 
     def add_job(self, job: Job, current_time: int) -> None:
         self.job_level[job.job_id] = 0
         self.job_used[job.job_id] = 0
         self.queues[0].append(job)
 
+    def _maybe_boost(self, current_time: int) -> None:
+        """periodically move all jobs back to the topmost queue."""
+        if current_time - self.last_boost_time >= self.boost_interval:
+            self.last_boost_time = current_time
+            for level in range(1, self.num_queues):
+                while self.queues[level]:
+                    job = self.queues[level].popleft()
+                    self.job_level[job.job_id] = 0
+                    self.job_used[job.job_id] = 0
+                    self.queues[0].append(job)
+
     def get_next_job(self, current_time: int) -> Optional[Job]:
+        self._maybe_boost(current_time)
         for q in self.queues:
             if q:
                 return q.popleft()
