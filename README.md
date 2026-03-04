@@ -12,6 +12,13 @@ python main.py
 Runs all 6 schedulers on batch, interactive, and mixed workloads and prints a comparison table.
 If `matplotlib` is installed, it also saves visualization PNGs to `results/`.
 
+Customize experiment size/parameters from CLI:
+
+```bash
+python main.py --batch-num-jobs 20 --interactive-num-jobs 50 --mixed-num-batch 10 --mixed-num-interactive 30
+python main.py --quantum 4 --starvation-threshold 100 --seed 42 --no-viz
+```
+
 ## Platform Extension (UI)
 
 Run:
@@ -37,6 +44,10 @@ Metrics used in each workload's visualization:
 - Batch: Avg Turnaround Time
 - Interactive: Avg Response Time
 - Mixed: Starvation Rate, Avg Response Time
+
+Each chart title includes workload size context:
+- Batch/Interactive: `n=...`
+- Mixed: `batch=..., interactive=...`
 
 ## Project Structure
 

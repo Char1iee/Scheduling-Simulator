@@ -43,6 +43,10 @@ def run_experiments(
     quantum: int = 4,
     workload_seed: int = 42,
     starvation_threshold: int = 100,
+    batch_num_jobs: int = 20,
+    interactive_num_jobs: int = 50,
+    mixed_num_batch: int = 10,
+    mixed_num_interactive: int = 30,
 ) -> List[ExperimentResult]:
     """
     Run each scheduler on batch, interactive, and mixed workloads.
@@ -51,9 +55,15 @@ def run_experiments(
     schedulers = schedulers or DEFAULT_SCHEDULERS
 
     workloads = {
-        "batch": generate_batch_workload(num_jobs=20, seed=workload_seed),
-        "interactive": generate_interactive_workload(num_jobs=50, seed=workload_seed),
-        "mixed": generate_mixed_workload(seed=workload_seed),
+        "batch": generate_batch_workload(num_jobs=batch_num_jobs, seed=workload_seed),
+        "interactive": generate_interactive_workload(
+            num_jobs=interactive_num_jobs, seed=workload_seed
+        ),
+        "mixed": generate_mixed_workload(
+            num_batch=mixed_num_batch,
+            num_interactive=mixed_num_interactive,
+            seed=workload_seed,
+        ),
     }
 
     results: List[ExperimentResult] = []

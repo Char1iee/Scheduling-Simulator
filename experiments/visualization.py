@@ -36,23 +36,30 @@ def generate_visualizations(
     for workload in workloads:
         wl_results = [r for r in results if r.workload_name == workload]
         by_sched = {r.scheduler_name: r for r in wl_results}
+        workload_n = len(wl_results[0].completed_jobs) if wl_results else 0
 
         if workload == "batch":
             metric_defs = [
                 ("avg_turnaround_time", "Avg Turnaround Time", 1.0),
             ]
-            title = "Batch (turnaround-focused)"
+            title = f"Batch (turnaround-focused, n={workload_n})"
         elif workload == "interactive":
             metric_defs = [
                 ("avg_response_time", "Avg Response Time", 1.0),
             ]
-            title = "Interactive (latency-focused)"
+            title = f"Interactive (latency-focused, n={workload_n})"
         else:
             metric_defs = [
                 ("starvation_rate", "Starvation Rate (%)", 100.0),
                 ("avg_response_time", "Avg Response Time", 1.0),
             ]
-            title = "Mixed (fair vs. responsive)"
+            mixed_jobs = wl_results[0].completed_jobs if wl_results else []
+            batch_count = sum(1 for j in mixed_jobs if j.priority <= 0)
+            interactive_count = len(mixed_jobs) - batch_count
+            title = (
+                "Mixed (fair vs. responsive, "
+                f"batch={batch_count}, interactive={interactive_count})"
+            )
 
         fig, axes = plt.subplots(1, len(metric_defs), figsize=(6 * len(metric_defs), 5))
         if len(metric_defs) == 1:
