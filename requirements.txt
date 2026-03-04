@@ -1,3 +1,4 @@
 # Workload-Driven Scheduling Evaluation
 # Python 3.10+ recommended
-# No external dependencies required for core simulation
+# Core simulation has no heavy dependencies.
+matplotlib>=3.8

@@ -5,10 +5,23 @@ CS214 project: evaluate CPU scheduling policies across batch, interactive, and m
 ## Quick Start
 
 ```bash
+pip install -r requirements.txt
 python main.py
 ```
 
 Runs all 6 schedulers on batch, interactive, and mixed workloads and prints a comparison table.
+If `matplotlib` is installed, it also saves visualization PNGs to `results/`.
+
+## Visualizations
+
+- `results/batch.png` for **Batch (turnaround-focused)**
+- `results/interactive.png` for **Interactive (latency-focused)**
+- `results/mixed.png` for **Mixed (fair vs. responsive)**
+
+Metrics used in each workload's visualization:
+- Batch: Avg Turnaround Time
+- Interactive: Avg Response Time
+- Mixed: Starvation Rate, Avg Response Time
 
 ## Project Structure
 
