@@ -1,0 +1,4 @@
+job_id,arrival_time,burst_time,priority
+0,0,12,0
+1,1,4,2
+2,3,8,1
