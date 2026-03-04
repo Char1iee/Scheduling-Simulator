@@ -12,6 +12,21 @@ python main.py
 Runs all 6 schedulers on batch, interactive, and mixed workloads and prints a comparison table.
 If `matplotlib` is installed, it also saves visualization PNGs to `results/`.
 
+## Platform Extension (UI)
+
+Run:
+
+```bash
+streamlit run platform_ui/app.py
+```
+
+The UI allows you to:
+- Define workloads manually (CSV/JSON)
+- Upload your own workload files (`.csv`/`.json`)
+- Run selected schedulers on that workload
+- Visualize results in a bar plot and choose which metric to plot
+- Export metrics as CSV
+
 ## Visualizations
 
 - `results/batch.png` for **Batch (turnaround-focused)**
@@ -32,6 +47,7 @@ Scheduling-Simulator/
 ├── simulation/       # Engine + metrics
 ├── workloads/        # Batch, interactive, mixed workload generators
 ├── experiments/      # Runner + comparison
+├── platform_ui/      # Streamlit extension for custom workload experiments
 ├── main.py
 └── requirements.txt
 ```

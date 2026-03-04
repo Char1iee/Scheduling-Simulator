@@ -2,3 +2,4 @@
 # Python 3.10+ recommended
 # Core simulation has no heavy dependencies.
 matplotlib>=3.8
+streamlit>=1.36
