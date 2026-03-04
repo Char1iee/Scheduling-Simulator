@@ -96,10 +96,11 @@ def print_results_table(results: List[ExperimentResult]) -> None:
             if r is None:
                 continue
             m = r.metrics
-            print(f"{sched:<20} {m.avg_turnaround_time:>10.1f} {m.avg_response_time:>10.1f} "
-                  f"{m.tail_latency_p95:>10.1f}"
-                  f" {m.starvation_rate*100:>11.1f}%"
-                  f" {m.lifetime_starvation_rate*100:>11.1f}%")
+            print(f"{sched:<20} {m.avg_turnaround_time:>10.1f}"
+                  f"{m.avg_response_time:>10.1f} "
+                  f"{m.tail_latency_p95:>10.0f}"
+                  f"{m.starvation_rate*100:>10.2f}%"
+                  f"{m.lifetime_starvation_rate*100:>10.2f}%")
 
     print("\n" + "=" * 100)
     print("Starv(1st)  = % of jobs waiting > threshold before first run")
