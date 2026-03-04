@@ -38,6 +38,7 @@ class SRTFScheduler(Scheduler):
 
     name = "SRTF"
 
+    preempts_on_quantum = False
     preempts_on_arrival = True
 
     def __init__(self) -> None:
