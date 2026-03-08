@@ -16,7 +16,7 @@ Customize experiment size/parameters from CLI:
 
 ```bash
 python main.py --batch-num-jobs 20 --interactive-num-jobs 50 --mixed-num-batch 10 --mixed-num-interactive 30
-python main.py --quantum 4 --starvation-threshold 100 --seed 42 --no-viz
+python main.py --quantum 4 --starvation-factor 2.0 --seed 42 --no-viz
 ```
 
 ## Platform Extension (UI)
@@ -70,8 +70,8 @@ Scheduling-Simulator/
 | **Avg Turnaround Time** | Mean of (completion_time - arrival_time) across all jobs. Measures batch efficiency. |
 | **Avg Response Time** | Mean of (first_run_time - arrival_time). Measures interactive responsiveness. |
 | **Tail Latency (p95)** | 95th percentile turnaround time. Captures worst-case user experience. |
-| **Starv(1st)** | Fraction of jobs whose wait before first run exceeds a threshold. Measures initial scheduling delay. |
-| **Starv(life)** | Fraction of jobs whose total wait over their lifetime (turnaround - burst) exceeds a threshold. Captures repeated preemption/demotion starvation that first-run misses (e.g., MLFQ demoting long jobs). |
+| **Starv(1st)** | Fraction of jobs with (first-run wait / burst) > factor × median ratio. Flags unfair initial delay. |
+| **Starv(life)** | Fraction of jobs with (total wait / burst) > factor × median ratio. Flags unfair lifetime delay (e.g., MLFQ demoting long jobs). Default factor = 2.0. |
 
 ## Schedulers
 
@@ -128,4 +128,4 @@ MLFQ is expected to show a split: near-zero first-run starvation (new jobs alway
 
 - Add schedulers in `schedulers/` (subclass `Scheduler`)
 - Add workloads in `workloads/generator.py`
-- Tune parameters in `experiments/runner.py` (quantum, starvation threshold, etc.)
+- Tune parameters in `experiments/runner.py` (quantum, starvation factor, etc.)

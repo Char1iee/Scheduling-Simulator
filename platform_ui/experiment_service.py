@@ -53,7 +53,7 @@ def run_platform_experiment(
     jobs: list[Job],
     scheduler_names: list[str],
     quantum: int,
-    starvation_threshold: int,
+    starvation_factor: float,
     lottery_seed: int,
 ) -> list[PlatformRunResult]:
     if not jobs:
@@ -66,7 +66,7 @@ def run_platform_experiment(
         scheduler = build_scheduler(scheduler_name, lottery_seed=lottery_seed)
         engine = SimulationEngine(scheduler=scheduler, quantum=quantum)
         completed_jobs = engine.run(jobs)
-        metrics = compute_metrics(completed_jobs, starvation_threshold=starvation_threshold)
+        metrics = compute_metrics(completed_jobs, starvation_factor=starvation_factor)
         results.append(
             PlatformRunResult(
                 scheduler_name=scheduler.name,

@@ -42,7 +42,7 @@ def run_experiments(
     schedulers: List[Type[Scheduler]] | None = None,
     quantum: int = 4,
     workload_seed: int = 42,
-    starvation_threshold: int = 100,
+    starvation_factor: float = 2.0,
     batch_num_jobs: int = 20,
     interactive_num_jobs: int = 50,
     mixed_num_batch: int = 10,
@@ -73,7 +73,7 @@ def run_experiments(
             scheduler = SchedulerClass()
             engine = SimulationEngine(scheduler=scheduler, quantum=quantum)
             completed = engine.run(jobs)
-            metrics = compute_metrics(completed, starvation_threshold=starvation_threshold)
+            metrics = compute_metrics(completed, starvation_factor=starvation_factor)
             results.append(
                 ExperimentResult(
                     scheduler_name=scheduler.name,
@@ -113,5 +113,5 @@ def print_results_table(results: List[ExperimentResult]) -> None:
                   f"{m.lifetime_starvation_rate*100:>10.2f}%")
 
     print("\n" + "=" * 100)
-    print("Starv(1st)  = % of jobs waiting > threshold before first run")
-    print("Starv(life) = % of jobs whose total wait (turnaround - burst) > threshold")
+    print("Starv(1st)  = % of jobs with first-run wait/burst > factor × median")
+    print("Starv(life) = % of jobs with total wait/burst > factor × median (median-relative)")
