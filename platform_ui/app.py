@@ -189,16 +189,16 @@ def render_results(results: list[PlatformRunResult]) -> None:
             "avg_turnaround": st.column_config.NumberColumn(format="%.1f"),
             "avg_response": st.column_config.NumberColumn(format="%.1f"),
             "tail_p95": st.column_config.NumberColumn(format="%g"),
-            "starvation_first_%": st.column_config.NumberColumn(format="%.1f"),
-            "starvation_lifetime_%": st.column_config.NumberColumn(format="%.1f"),
+            "starvation_first (%)": st.column_config.NumberColumn(format="%.1f"),
+            "starvation_lifetime (%)": st.column_config.NumberColumn(format="%.1f"),
         },
     )
     metric_options = {
         "Average Turnaround Time": "avg_turnaround",
         "Average Response Time": "avg_response",
         "Tail Latency (p95)": "tail_p95",
-        "Starvation First Run (%)": "starvation_first_%",
-        "Starvation Lifetime (%)": "starvation_lifetime_%",
+        "Starvation First Run (%)": "starvation_first (%)",
+        "Starvation Lifetime (%)": "starvation_lifetime (%)",
     }
     selected_metric_label = st.selectbox(
         "Metric to visualize",
