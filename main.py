@@ -16,12 +16,6 @@ def parse_args() -> argparse.Namespace:
         "--seed", type=int, default=42, help="Random seed for workload generation."
     )
     parser.add_argument(
-        "--starvation-factor",
-        type=float,
-        default=2.0,
-        help="Starvation threshold = factor × burst_time (scale-invariant).",
-    )
-    parser.add_argument(
         "--batch-num-jobs",
         type=int,
         default=20,
@@ -63,7 +57,6 @@ def main() -> None:
     results = run_experiments(
         quantum=args.quantum,
         workload_seed=args.seed,
-        starvation_factor=args.starvation_factor,
         batch_num_jobs=args.batch_num_jobs,
         interactive_num_jobs=args.interactive_num_jobs,
         mixed_num_batch=args.mixed_num_batch,

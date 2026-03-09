@@ -16,7 +16,7 @@ Customize experiment size/parameters from CLI:
 
 ```bash
 python main.py --batch-num-jobs 20 --interactive-num-jobs 50 --mixed-num-batch 10 --mixed-num-interactive 30
-python main.py --quantum 4 --starvation-factor 2.0 --seed 42 --no-viz
+python main.py --quantum 4 --seed 42 --no-viz
 ```
 
 ## Platform Extension (UI)
@@ -70,8 +70,8 @@ Scheduling-Simulator/
 | **Avg Turnaround Time** | Mean of (completion_time - arrival_time) across all jobs. Measures batch efficiency. |
 | **Avg Response Time** | Mean of (first_run_time - arrival_time). Measures interactive responsiveness. |
 | **Tail Latency (p95)** | 95th percentile turnaround time. Captures worst-case user experience. |
-| **Starv(1st)** | Fraction of jobs with (first-run wait / burst) > factor × median ratio. Flags unfair initial delay. |
-| **Starv(life)** | Fraction of jobs with (total wait / burst) > factor × median ratio. Flags unfair lifetime delay (e.g., MLFQ demoting long jobs). Default factor = 2.0. |
+| **Starv(1st)** | Gini starvation index on first-run waits (0% = perfectly equal waits, higher = more concentrated starvation). |
+| **Starv(life)** | Gini starvation index on lifetime waits (same interpretation). |
 
 ## Schedulers
 
@@ -116,7 +116,7 @@ Based on theoretical analysis from the project proposal:
 | SJF / SRTF | Low | Medium | High | High | High |
 | Lottery | Medium | Medium | Medium | Low | Medium |
 
-MLFQ is expected to show a split: near-zero first-run starvation (new jobs always enter queue 0) but medium-high lifetime starvation (long-running jobs are demoted and repeatedly delayed).
+MLFQ is expected to show a split: low first-run starvation (new jobs always enter queue 0) but higher lifetime starvation (long-running jobs are demoted and repeatedly delayed).
 
 **Batch workloads**: SJF/SRTF expected to achieve best turnaround. Round Robin and Lottery provide more stable fairness at higher turnaround cost.
 
@@ -128,4 +128,4 @@ MLFQ is expected to show a split: near-zero first-run starvation (new jobs alway
 
 - Add schedulers in `schedulers/` (subclass `Scheduler`)
 - Add workloads in `workloads/generator.py`
-- Tune parameters in `experiments/runner.py` (quantum, starvation factor, etc.)
+- Tune parameters in `experiments/runner.py` (quantum, workload size, etc.)

@@ -47,13 +47,6 @@ def main() -> None:
     with st.sidebar:
         st.header("Experiment Settings")
         quantum = st.number_input("Global quantum", min_value=1, value=4, step=1)
-        starvation_factor = st.number_input(
-            "Starvation factor (median-relative: wait/burst > factor × median)",
-            min_value=0.1,
-            value=2.0,
-            step=0.1,
-            format="%.1f",
-        )
         lottery_seed = st.number_input("Lottery seed", min_value=0, value=42, step=1)
 
         scheduler_names = st.multiselect(
@@ -94,7 +87,6 @@ def main() -> None:
                 jobs=jobs,
                 scheduler_names=scheduler_names,
                 quantum=quantum,
-                starvation_factor=starvation_factor,
                 lottery_seed=lottery_seed,
             )
         except ValueError as err:
